@@ -1,8 +1,8 @@
 package SearchEngine;
-import OSMGraph.*;
-import OSMUtil.GeoLocation;
-
 import java.util.List;
+
+import OSMGraph.AbstractVertex;
+import OSMGraph.RoadEdge;
 
 /**
  * author: Lining Pan

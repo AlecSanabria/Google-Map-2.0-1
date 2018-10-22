@@ -1,6 +1,10 @@
 package OSMUtil;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * author: Lining Pan
@@ -22,7 +26,7 @@ public class OSMXMLDataModel implements OSMAbstractDataModel {
 				OSMWay curr_w = wayMap.get(k);
 				for(Long nk: curr_w.getNodeIdList()) {
 					if(!nodeInWay.containsKey(nk)) {
-						nodeInWay.put(nk, new HashSet<>());
+						nodeInWay.put(nk, (Set)new HashSet<>());
 					}
 					nodeInWay.get(nk).add(k);
 				}		

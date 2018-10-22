@@ -1,12 +1,17 @@
 package OSMGraph;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import OSMUtil.OSMAbstractDataModel;
 import OSMUtil.OSMMathUtil;
 import OSMUtil.OSMNode;
 import OSMUtil.OSMWay;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * author: Lining Pan
@@ -27,66 +32,66 @@ public class OSMGraphConstructor {
     public OSMGraphConstructor(OSMAbstractDataModel dm) {
         this.dm = dm;
         //nodeSet = dm.getAllNodeId();
-        waySet = dm.getAllWayId();
-        verList = new ConcurrentHashMap<>();
-        nodeOnRoad = new HashSet<>();
-        adjList = new ConcurrentHashMap<>();
-        way2edgeList = new ConcurrentHashMap<>();
-        nodeInEdge = new ConcurrentHashMap<>();
+        this.waySet = dm.getAllWayId();
+        this.verList = new ConcurrentHashMap<>();
+        this.nodeOnRoad = new HashSet<>();
+        this.adjList = new ConcurrentHashMap<>();
+        this.way2edgeList = new ConcurrentHashMap<>();
+        this.nodeInEdge = new ConcurrentHashMap<>();
 
-        graph = this.constructGraph();
+        this.graph = this.constructGraph();
     }
 
     public Graph getGraph(){
-        return graph;
+        return this.graph;
     }
 
     private Graph constructGraph() {
 
-        for (Long i_w : waySet) {
-            OSMWay way = dm.getWayByID(i_w);
+        for (Long i_w : this.waySet) {
+            OSMWay way = this.dm.getWayByID(i_w);
 
             if (!way.isRoad()) continue;
             double speed = way.getSpeedLimit();
 
             List<Long> wayList = way.getNodeIdList();
             Iterator<Long> it = wayList.iterator();
-            OSMNode from = dm.getNodeById(it.next());
+            OSMNode from = this.dm.getNodeById(it.next());
             OSMNode last = from;
             Set<Long> inEdge = new HashSet<>();
-            nodeOnRoad.add(from.getID());
+            this.nodeOnRoad.add(from.getID());
             double length = 0.0;
             while (it.hasNext()) {
-                OSMNode node = dm.getNodeById(it.next());
+                OSMNode node = this.dm.getNodeById(it.next());
                 length += OSMMathUtil.distance(last, node);
 
-                nodeOnRoad.add(node.getID());
+                this.nodeOnRoad.add(node.getID());
 
-                if (!it.hasNext() || dm.isVertexNode(node.getID())) {
+                if (!it.hasNext() || this.dm.isVertexNode(node.getID())) {
                     //construct new edge(s)
                     RoadVertex f = new RoadVertex(from);
                     RoadVertex t = new RoadVertex(node);
 
-                    verList.put(f.getID(), f);
-                    verList.put(t.getID(), t);
+                    this.verList.put(f.getID(), f);
+                    this.verList.put(t.getID(), t);
 
-                    if (!adjList.containsKey(f))
-                        adjList.put(f, new LinkedList<>());
-                    if (!adjList.containsKey(t))
-                        adjList.put(t, new LinkedList<>());
-                    if (!way2edgeList.containsKey(way.getID()))
-                        way2edgeList.put(way.getID(), new HashSet<>());
+                    if (!this.adjList.containsKey(f))
+                        this.adjList.put(f, new LinkedList<AbstractEdge>());
+                    if (!this.adjList.containsKey(t))
+                        this.adjList.put(t, new LinkedList<AbstractEdge>());
+                    if (!this.way2edgeList.containsKey(way.getID()))
+                        this.way2edgeList.put(way.getID(), (Set)(new HashSet<>()));
 
                     RoadEdge e = new RoadEdge(way, f, t, speed, length);
-                    adjList.get(f).add(e);
-                    way2edgeList.get(way.getID()).add(e);
-                    nodeInEdge.put(e,inEdge);
+                    this.adjList.get(f).add(e);
+                    this.way2edgeList.get(way.getID()).add(e);
+                    this.nodeInEdge.put(e,inEdge);
 
                     if (!way.isOneway()) {
                         RoadEdge r = new RoadEdge(way, t, f, speed, length);
-                        adjList.get(t).add(r);
-                        way2edgeList.get(way.getID()).add(r);
-                        nodeInEdge.put(r,inEdge);
+                        this.adjList.get(t).add(r);
+                        this.way2edgeList.get(way.getID()).add(r);
+                        this.nodeInEdge.put(r,inEdge);
                     }
                     length = 0.0;
                     from = node;
@@ -98,6 +103,6 @@ public class OSMGraphConstructor {
             }
         }
 
-        return new Graph(verList, adjList, nodeOnRoad, nodeInEdge, way2edgeList, dm);
+        return new Graph(this.verList, this.adjList, this.nodeOnRoad, this.nodeInEdge, this.way2edgeList, this.dm);
     }
 }
