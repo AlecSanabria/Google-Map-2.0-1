@@ -1,6 +1,6 @@
 package OSMGraph;
 
-import OSMUtil.*;
+import OSMUtil.OSMNode;
 
 
 /**
@@ -12,4 +12,5 @@ public class RoadVertex extends AbstractVertex {
 		super(o, o.getLatitude(), o.getLongitude());
 		// TODO Auto-generated constructor stub
 	}
+
 }

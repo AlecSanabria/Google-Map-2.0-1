@@ -1,7 +1,12 @@
 package OSMGraph;
 
-import java.util.*;
-import OSMUtil.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+
+import OSMUtil.OSMAbstractDataModel;
 
 /**
  * author: Lining Pan
@@ -49,6 +54,7 @@ public class Graph {
 		}
 		return null;
 	}
+	
 	public Set<AbstractEdge> getEdgesWithInternalNode(long id){
 	    Set<Long> ways = dm.getAllWayContainsNode(id);
         Set<AbstractEdge> re = new HashSet<>();
@@ -68,8 +74,18 @@ public class Graph {
     public boolean isOnRoad(long id){
 	    return nodeOnRoad.contains(id);
     }
+    
+    public Long getKeyByValue(AbstractVertex value) {
+        for (Long l : verList.keySet()) {
+            if (verList.get(l).equals(value)) {
+                return l;
+            }
+        }
+        return null;
+    }
 
     public final Set<Long> getNodeOnRoad(){
 	    return nodeOnRoad;
     }
+    
 }

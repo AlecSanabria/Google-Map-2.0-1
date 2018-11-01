@@ -1,6 +1,8 @@
 package OSMGraph;
-import OSMUtil.*;
-import com.sun.javafx.binding.StringFormatter;
+import java.util.LinkedList;
+
+import OSMUtil.GeoLocation;
+import OSMUtil.OSMAbstractType;
 
 /**
  * author: Lining Pan
@@ -9,6 +11,9 @@ public abstract class AbstractVertex implements GeoLocation{
 	private OSMAbstractType osm_ver;
 	private double center_lat;
 	private double center_lon;
+	private double costToGetHere = Double.POSITIVE_INFINITY;
+	private boolean finished = false;
+	private LinkedList<RoadEdge> path;
 	
 	public AbstractVertex(OSMAbstractType o, double c_lat, double c_lon) {
 		osm_ver = o;
@@ -58,4 +63,33 @@ public abstract class AbstractVertex implements GeoLocation{
 	public String getLocString(){
 		return String.format("%f,%f",center_lat,center_lon);
 	}
+
+	public void updateCost(AbstractVertex from, RoadEdge edge) {
+		if(from == null && edge == null) {
+			this.costToGetHere = 0;
+		}
+ 		double cost = from.getCostToGetHere() + edge.getCost();
+		if(cost < this.costToGetHere) {
+			this.costToGetHere = cost;
+			this.path = from.getPath();
+			this.path.add(edge);
+		}
+	}
+	
+	public double getCostToGetHere() {
+		return costToGetHere;
+	}
+	
+	public void setFinished() {
+		this.finished = true;
+	}
+	
+	public boolean isFinished() {
+		return this.finished;
+	}
+	
+	public LinkedList<RoadEdge> getPath(){
+		return this.path;
+	}
+
 }
